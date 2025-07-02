@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI-Enhanced Finance Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #050b46;
+    }
+    h2, h3, label, p, div {
+      color: #dfd4d4;
+    }
+    button {
+      background-color: #0cf014;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="number"] {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>AI-Enhanced Personal Finance Tracker</h2>
+  <form id="financeForm">
+    <h3>Income</h3>
+    <label>Salary: <input type="number" name="salary" required></label><br>
+    <label>Freelancing: <input type="number" name="freelancing"></label><br>
+    <label>Passive Income: <input type="number" name="passive_income"></label><br>
+
+    <h3>Expenses</h3>
+    <label>Rent: <input type="number" name="rent"></label><br>
+    <label>Food: <input type="number" name="food"></label><br>
+    <label>Utilities: <input type="number" name="utilities"></label><br>
+    <label>Entertainment: <input type="number" name="entertainment"></label><br>
+
+    <h3>Liabilities</h3>
+    <label>Loans: <input type="number" name="loans"></label><br>
+    <label>Credit Cards: <input type="number" name="credit_cards"></label><br>
+    <label>EMIs: <input type="number" name="emis"></label><br>
+
+    <h3>Budgets & Goals</h3>
+    <label>Monthly Spending Target: <input type="number" name="monthly_spending_target"></label><br>
+    <label>Saving Goal: <input type="number" name="saving_goal"></label><br>
+
+    <h3>Risk Preference</h3>
+    <label><input type="radio" name="risk" value="low" checked> Low</label><br>
+    <label><input type="radio" name="risk" value="medium"> Medium</label><br>
+    <label><input type="radio" name="risk" value="high"> High</label><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="suggestions" style="margin-top:20px;"></div>
+
+  <script>
+    document.getElementById('financeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {};
+      for (const [key, value] of formData.entries()) {
+        if (key === "risk") {
+          data[key] = value;
+        } else {
+          data[key] = parseFloat(value) || 0;
+        }
+      }
+
+      const totalIncome = data.salary + data.freelancing + data.passive_income;
+      const totalExpenses = data.rent + data.food + data.utilities + data.entertainment;
+      const totalLiabilities = data.loans + data.credit_cards + data.emis;
+      const disposableIncome = totalIncome - totalExpenses - totalLiabilities;
+
+      let suggestion = <h3>AI-Powered Investment Suggestions</h3>;
+      suggestion += <p><strong>Total Income:</strong> $${totalIncome.toFixed(2)}</p>;
+      suggestion += <p><strong>Total Expenses:</strong> $${totalExpenses.toFixed(2)}</p>;
+      suggestion += <p><strong>Total Liabilities:</strong> $${totalLiabilities.toFixed(2)}</p>;
+      suggestion += <p><strong>Disposable Income:</strong> $${disposableIncome.toFixed(2)}</p>;
+
+      if (disposableIncome <= 0) {
+        suggestion += <p><strong>Action:</strong> Focus on reducing expenses or liabilities before investing.</p>;
+      } else {
+        const riskLevel = data.risk;
+        const portfolio = {
+          low: [
+            { name: "High-Yield Savings", percent: 60 },
+            { name: "Government Bonds", percent: 30 },
+            { name: "Blue-chip ETFs", percent: 10 }
+          ],
+          medium: [
+            { name: "Index Funds", percent: 40 },
+            { name: "ETFs", percent: 30 },
+            { name: "Corporate Bonds", percent: 20 },
+            { name: "Crypto (Blue-Chip)", percent: 10 }
+          ],
+          high: [
+            { name: "Stocks", percent: 50 },
+            { name: "Crypto (Altcoins)", percent: 30 },
+            { name: "Real Estate (REITs)", percent: 15 },
+            { name: "Startups/Crowdfunding", percent: 5 }
+          ]
+        };
+
+        suggestion += <p><strong>Risk Preference:</strong> ${riskLevel.toUpperCase()}</p>;
+        suggestion += <p>Suggested Portfolio Allocation:</p><ul>;
+        portfolio[riskLevel].forEach(asset => {
+          const amount = (disposableIncome * asset.percent) / 100;
+          suggestion += <li>${asset.name}: $${amount.toFixed(2)} (${asset.percent}%)</li>;
+        });
+        suggestion += </ul>;
+      }
+
+      document.getElementById('suggestions').innerHTML = suggestion;
+    });
+  </script>
+</body>
+</html>
